@@ -43,7 +43,7 @@ namespace SleeperTeleport
             {
                 if (args.Length < 1)
                 {
-                    pl.MessageFrom(Name, "Try /stp ID");
+                    pl.Notice("!", "/stp Player ID");
 
                     string[] en = locs.EnumSection("Locs");
                     // Loops trough the ini folder and sends all id into a list
