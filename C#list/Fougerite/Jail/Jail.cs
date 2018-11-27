@@ -21,7 +21,7 @@ namespace Jail
 
         public string ArrestMessage = "You have been sended to jail";
         public string FreeMessage = "{inmate} is now free from jail";
-        public string GlobalSendMessage = "{inmate} was send to jail by {sender} for {time} minutes, for {reason}";
+        public string GlobalSendMessage = "{inmate} Adlı Oyuncu {reason} Sebebinden {time} Dakika Hapse Atıldı !";
         public string ResCommands = "tpr,tpa,home,kit,kits,hg,warp";
 
         public bool AllowMods = false;
@@ -171,11 +171,10 @@ namespace Jail
             {
                 if (sender.Admin || sender.Moderator && AllowMods)
                 {
-                    sender.MessageFrom(Name, green + "Jail Remastered by " + cadet1 + Author);
-                    sender.MessageFrom(Name, cornflower + "/jail_send player time reason - sends a player to jail");
-                    sender.MessageFrom(Name, cornflower + "/jail_set radius - sends a jail");
-                    sender.MessageFrom(Name, cornflower + "/jail_del - deletes the jail");
-                    sender.MessageFrom(Name, cornflower + "/jail_free player - free someone");
+                    sender.MessageFrom(Name, cornflower + "/jail_send player time reason - Oyuncuyu Hapse Gönderir.");
+                    sender.MessageFrom(Name, cornflower + "/jail_set radius - Yeni Hapis Ayarlar.");
+                    sender.MessageFrom(Name, cornflower + "/jail_del - Hapsi Kaldırır.");
+                    sender.MessageFrom(Name, cornflower + "/jail_free player - Oyuncuyu Serbest Bırakır.");
                 }
             }
             else if (cmd == "jail_send")
@@ -184,16 +183,16 @@ namespace Jail
                 {
                     if (args.Length != 3)
                     {
-                        sender.Notice("☢", "Usage /jail_send player time reason", 20f);
+                        sender.Notice("☢", "Hapis için - /jail_send player time reason", 20f);
                         return;
                     }
                     Player inmate = server.FindPlayer(args[0]);
-                    if (inmate == null) { sender.Notice("☢", "Couldn't find the target user", 10f); return; }
+                    if (inmate == null) { sender.Notice("☢", "Hedef Oyuncu Bulunamadı !", 10f); return; }
                     if (!inmate.IsAlive) { sender.Notice("☢", inmate.Name + " seems to be dead wait for him to respawn", 10f); return; }
-                    if (list.ContainsSetting("inmates", inmate.SteamID)) { sender.Notice("☢", inmate.Name + " is already in jail", 10f); return; }
-                    if (!ini.ContainsSetting("jailloc", "location")) { sender.Notice("☢", "You must have a jail", 10f); return; }
-                    if (!radius.ContainsKey("radius")) { sender.Notice("☢", "Failed to find jail radius please reset the jail", 10f); return; }
-                    if (inmate.Admin && AdminProtection) { sender.Notice("☢", "You cannot send admins to jail", 10f); return; }
+                    if (list.ContainsSetting("inmates", inmate.SteamID)) { sender.Notice("☢", inmate.Name + " Adlı Oyuncu Zaten Hapiste !", 10f); return; }
+                    if (!ini.ContainsSetting("jailloc", "location")) { sender.Notice("☢", "Hapiste Olmalısın !", 10f); return; }
+                    if (!radius.ContainsKey("radius")) { sender.Notice("☢", "Hapihane Yarı Çapı Bulunamadı, Lütfen Tekrar Ayarlayın..", 10f); return; }
+                    if (inmate.Admin && AdminProtection) { sender.Notice("☢", "Adminler Hapise Giremez !", 10f); return; }
                     int time = Convert.ToInt32(args[1]);
                     Vector3 loc = util.ConvertStringToVector3(ini.GetSetting("jailloc", "location"));
                     string message = GlobalSendMessage.Replace("{inmate}", inmate.Name).Replace("{sender}", sender.Name).Replace("{time}", args[1]).Replace("{reason}", args[2]);
@@ -215,7 +214,7 @@ namespace Jail
                 }
                 else
                 {
-                    sender.Notice("✘", "You dont have permissions to use this command", 10f);
+                    sender.Notice("✘", "Bu Komut için Yeterli Yetkin Yok !", 10f);
                 }
             }
             else if (cmd == "jail_set")
@@ -224,12 +223,12 @@ namespace Jail
                 {
                     if (args.Length != 1)
                     {
-                        sender.Notice("☢", "Usage /jail_set Radius");
+                        sender.Notice("☢", "/jail_set Radius");
                         return;
                     }
                     if (ini.ContainsSetting("jailloc", "location"))
                     {
-                        sender.Notice("☢", "Please remove your jail before setting new one");
+                        sender.Notice("☢", "Yeni Bir Hapisane Yaratmadan Bir Öncekini Kaldırın !");
                         return;
                     }
                     int rad = Convert.ToInt32(args[0]);
@@ -244,14 +243,14 @@ namespace Jail
                 {
                     if (!ini.ContainsSetting("jailloc", "location"))
                     {
-                        sender.Notice("☢", "Failed to find jail", 10f);
+                        sender.Notice("☢", "Hapishane Bulunamadı !", 10f);
                         return;
                     }
                     ini.DeleteSetting("jailloc", "location");
                     ini.DeleteSetting("JailRadius", "radius");
                     radius.Remove("radius");
                     ini.Save();
-                    sender.Notice("☢", "The jail has been succesfully removed", 10f);
+                    sender.Notice("☢", "Hapishane Başarıyla Kaldırıldı !", 10f);
                 }
             }
             else if (cmd == "jail_free")
@@ -264,7 +263,7 @@ namespace Jail
                         return;
                     }
                     Player inmate = server.FindPlayer(args[0]);
-                    if (inmate == null) { sender.Notice("☢", "Couldn't find the target user", 10f); return; }
+                    if (inmate == null) { sender.Notice("☢", "Hedef Oyuncu Bulunamadı !", 10f); return; }
                     if (!ds.ContainsKey("inmates", inmate.SteamID)) { sender.Notice("☢", inmate.Name + " isnt in jail", 10f); return; }
                     list.DeleteSetting("inmates", inmate.SteamID);
                     list.DeleteSetting("jailreasons", inmate.SteamID);
@@ -299,8 +298,8 @@ namespace Jail
             {
                 var dict = new Dictionary<string, object>();
                 dict["user"] = pl;
-                Spawntimer(3 * 1000, dict).Start();
-                pl.MessageFrom(Name, "Teleporting back to jail in 3 seconds");
+                Spawntimer(5 * 1000, dict).Start();
+                pl.MessageFrom(Name, "Tutuklandın ve Hapishaneye Gönderiliyorsun - 5 Saniye");
             }
         }
         public void PlayerHurt(HurtEvent he)
@@ -312,7 +311,7 @@ namespace Jail
                 if (ds.ContainsKey("inmates", attacker.SteamID))
                 {
                     he.DamageAmount = 0f;
-                    attacker.MessageFrom(Name, "You cant kill when you are in jail");
+                    attacker.MessageFrom(Name, "Hapisteyken Kimseyi Öldüremezsin !");
                 }
             }
         }
@@ -321,7 +320,7 @@ namespace Jail
             if (ds.ContainsKey("inmates", actualplayer.SteamID))
             {
                 ent.Destroy();
-                actualplayer.MessageFrom(Name, "You cannot build while being in jail");
+                actualplayer.MessageFrom(Name, "Hapisteyken Yapı Yapamazsın !");
             }
             Vector3 pos = (Vector3)ds.Get("jailloc", "location");
             float dist = Vector3.Distance(actualplayer.Location, pos);
@@ -330,7 +329,7 @@ namespace Jail
             if (d < dist2)
             {
                 ent.Destroy();
-                actualplayer.MessageFrom(Name, "Sorry you cant build structures within the jail zone");
+                actualplayer.MessageFrom(Name, "Hapishane Bölgesinde Yapı Yapılması Yasaktır !");
             }
         }
         public void EntityHurt(HurtEvent he)
@@ -352,7 +351,7 @@ namespace Jail
                     if (d < dist2)
                     {
                         he.DamageAmount = 0f;
-                        attacker.MessageFrom(Name, "Sorry you cant hurt structures within the jail zone");
+                        attacker.MessageFrom(Name, "Hapishaneye RAİD Atamazsın !");
                     }
                 }
             }
