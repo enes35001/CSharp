@@ -53,7 +53,7 @@ namespace AntiWallLoot
                 ItemDataBlock block = DatablockDictionary.GetByName(e.ItemName);
                 e.Inventory.AddItemAmount(block, 1);
                 Notify(looter, e.Inventory);
-                Server.GetServer().BroadcastFrom(Core.Name, "[color yellow]☢ [color red]Player: [color yellow]" + looter.Name + "[color red] has been kicked for wall looting.");
+                Server.GetServer().BroadcastFrom(Core.Name, "[color red] " + looter.Name + "[color red] Adlı Oyuncu Wall-Loot Yaptığı için Sunucuda Atıldı !");
                 looter.Disconnect();               
             }
         }
